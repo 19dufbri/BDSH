@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     exit(0);
 }
 
-char *getLineInput() {
+char *getLineInput(void) {
     
     char *line;
     int cur;
@@ -305,7 +305,7 @@ void builtinhelp(int argc, char *argv[]) {
     printf(BINAMEC "================\n" RESETC);
 }
 
-void allocerror() {
+void allocerror(void) {
     fprintf(stderr, WARNC "bdsh: Couldn't allocate memory\n" RESETC);
     exit(1);
 }

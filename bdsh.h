@@ -14,13 +14,13 @@
 #define BIDESCC         PATHC
 #define RESETC          "\x1b[0m"
 
-char *getLineInput();
+char *getLineInput(void);
 char *findProgPath(char *prgm);
 char **getAllArgs(char *line);
 bool prgmInDir(char *dirName, char *fileSearch);
 char *getFullPath(char *path, char *prog);
 int createChildProcess(char* prgm, char *argv[]);
-void allocerror();
+void allocerror(void);
 
 bool checkBuiltins(char *argv[]);
 void builtinexit(int argc, char *argv[]);
