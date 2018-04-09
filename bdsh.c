@@ -11,6 +11,7 @@
 #include <errno.h>
 #include "bdsh.h"
 
+// Names of builtin commands
 char *builtin[] = {
     "exit",
     "cd",
@@ -18,6 +19,7 @@ char *builtin[] = {
     NULL
 };
 
+// Pointers to the builtin commands
 void (*builtinfunc[]) (int argc, char *argv[]) = {
     &builtinexit,
     &builtincd,
@@ -25,21 +27,26 @@ void (*builtinfunc[]) (int argc, char *argv[]) = {
     NULL
 };
 
+// Main function
 int main(int argc, char *argv[]) {
     
     char *line;
     char *path;
     char **args;
     
+    // Main loop of shell
     while (true) {
+        // Prompt
         printf(USERC "%s" RESETC ":" PATHC "%s" RESETC "> ", getpwuid(getuid())->pw_name, getcwd(NULL, 0));
         fflush(stdout);
+        // Get our arguments
         line = getLineInput();
         if (*line == 0x0) {
             free(line);
             continue;
         }
         args = getAllArgs(line);
+        // Try to execute
         if (checkBuiltins(args)) {
             free(args);
             free(line);
@@ -49,12 +56,14 @@ int main(int argc, char *argv[]) {
         if (path != NULL) {
             createChildProcess(path, args);
         }
+        // Memory Management
         free(args);
         free(line);
     }
     exit(0);
 }
 
+// Get a single line of stdin
 char *getLineInput(void) {
     
     char *line;
@@ -79,6 +88,7 @@ char *getLineInput(void) {
     return line;
 }
 
+// Break string by spaces
 char **getAllArgs(char *line) {
     
     char **argv;
@@ -121,6 +131,7 @@ char **getAllArgs(char *line) {
     return argv;
 }
 
+// Find the path to a specific program
 char *findProgPath(char *prgm) {
     
     char *path;
@@ -179,6 +190,7 @@ char *findProgPath(char *prgm) {
     return NULL;
 }
 
+// Get the full path of a program
 char *getFullPath(char *path, char *prog) {
     
     char *result;
@@ -194,8 +206,10 @@ char *getFullPath(char *path, char *prog) {
     return result;
 }
 
+// Get the environment 
 extern char **environ;
 
+// Attempt to create a child process
 int createChildProcess(char* prgm, char *argv[]) {
     
     int pid;
@@ -217,6 +231,7 @@ int createChildProcess(char* prgm, char *argv[]) {
     return -1;
 }
 
+// Check if a command is a builtin
 bool checkBuiltins(char *argv[]) {
     
     char *search;
@@ -238,6 +253,7 @@ bool checkBuiltins(char *argv[]) {
     return false;
 }
 
+// Exits the shell
 void builtinexit(int argc, char *argv[]) {
     if (argc == 2) {
         exit(atoi(argv[1]));
@@ -248,6 +264,7 @@ void builtinexit(int argc, char *argv[]) {
     }
 }
 
+// Changes the current directory
 void builtincd(int argc, char *argv[]) {
     
     char *home = getenv("HOME");
@@ -280,6 +297,7 @@ void builtincd(int argc, char *argv[]) {
     }
 }
 
+// Provide help for shell builtins
 void builtinhelp(int argc, char *argv[]) {
     printf(BINAMEC "===== Help =====\n");
     printf(BINAMEC "cd: "   BIDESCC "Change the current working directory\n");
@@ -288,6 +306,7 @@ void builtinhelp(int argc, char *argv[]) {
     printf(BINAMEC "================\n" RESETC);
 }
 
+// Endpoint for memory erors
 void allocerror(void) {
     fprintf(stderr, WARNC "bdsh: Couldn't allocate memory\n" RESETC);
     exit(1);
