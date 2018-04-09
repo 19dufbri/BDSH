@@ -17,7 +17,6 @@
 char *getLineInput(void);
 char *findProgPath(char *prgm);
 char **getAllArgs(char *line);
-bool prgmInDir(char *dirName, char *fileSearch);
 char *getFullPath(char *path, char *prog);
 int createChildProcess(char* prgm, char *argv[]);
 void allocerror(void);

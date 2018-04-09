@@ -125,6 +125,7 @@ char *findProgPath(char *prgm) {
     
     char *path;
     char *start;
+    char *result;
     char cur;
     int i;
     
@@ -143,11 +144,11 @@ char *findProgPath(char *prgm) {
         cur = path[i];
         if (cur == ':' || cur == 0x0) {
             path[i] = 0x0;
-            if (prgmInDir(start, prgm)) {
+            result = getFullPath(start, prgm);
+            if (fileExist(result)) {
                 free(path);
-                path = getFullPath(start, prgm);
-                if (fileExecute(path)) return path;
-                free(path);
+                if (fileExecute(result)) return result;
+                free(result);
                 fprintf(stderr, WARNC "%s: You don't have executable permissions\n" RESETC, prgm);
                 return 0x0;
             }
@@ -157,6 +158,7 @@ char *findProgPath(char *prgm) {
         i++;
     }
     
+    free(result);
     free(path);
     
     // Not in PATH, relative path?
@@ -175,25 +177,6 @@ char *findProgPath(char *prgm) {
     
     fprintf(stderr, WARNC "%s: Program couldn't be found\n" RESETC, prgm);
     return 0x0;
-}
-
-bool prgmInDir(char *dirName, char *fileSearch) {
-    
-    DIR *d;
-    struct dirent *file;
-    
-    d = opendir(dirName);
-    
-    if (d) {
-        while ((file = readdir(d))) {
-            if (strcmp(fileSearch, file->d_name) == 0) {
-                closedir(d);
-                return true;
-            }
-        }
-    }
-    
-    return false;
 }
 
 char *getFullPath(char *path, char *prog) {
