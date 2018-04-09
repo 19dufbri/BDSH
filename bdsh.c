@@ -64,9 +64,13 @@ char *getLineInput() {
     used = 0;
     line = calloc(BUF_SIZE, sizeof(char));
     
+    if (line == NULL) allocerror();
+    
     while ((cur = getchar()) != EOF) {
-        if (used % BUF_SIZE == 0)
+        if (used % BUF_SIZE == 0) {
             line = realloc(line, (BUF_SIZE + used) * sizeof(char));
+            if (line == NULL) allocerror();
+        }
         if (cur == '\n') break;
         line[used] = cur;
         used++;
@@ -85,6 +89,9 @@ char **getAllArgs(char *line) {
     bool space;
     
     argv = calloc(1, sizeof(char *));
+    
+    if (argv == NULL) allocerror();
+    
     i = 0;
     start = line;
     size = 0;
@@ -95,6 +102,9 @@ char **getAllArgs(char *line) {
         if (cur == ' ' || cur == 0x0) {
             if (!space) {
                 argv = realloc(argv, (size + 2) * sizeof(char *));
+                
+                if (argv == NULL) allocerror();
+                
                 argv[size] = start;
                 argv[size + 1] = NULL;
                 size++;
@@ -120,6 +130,9 @@ char *findProgPath(char *prgm) {
     
     start = getenv("PATH");
     path = calloc(strlen(start) + 1, sizeof(char));
+    
+    if (path == NULL) allocerror();
+    
     strcat(path, start);
     
     i = 0;
@@ -150,6 +163,9 @@ char *findProgPath(char *prgm) {
     if (fileExist(prgm)) {
         if (fileExecute(prgm)) {
             path = calloc(strlen(prgm) + 1, sizeof(char));
+            
+            if (path == NULL) allocerror();
+            
             strcat(path, prgm);
             return path;
         } else {
@@ -185,6 +201,9 @@ char *getFullPath(char *path, char *prog) {
     char *result;
     
     result = calloc(strlen(path) + strlen(prog) + 2, sizeof(char));
+    
+    if (result == NULL) allocerror();
+    
     strcat(result, path);
     strcat(result, "/");
     strcat(result, prog);
@@ -284,4 +303,9 @@ void builtinhelp(int argc, char *argv[]) {
     printf(BINAMEC "exit: " BIDESCC "Exits the shell environment\n");
     printf(BINAMEC "help: " BIDESCC "Gives hap on builtin shell commands\n");
     printf(BINAMEC "================\n" RESETC);
+}
+
+void allocerror() {
+    fprintf(stderr, WARNC "bdsh: Couldn't allocate memory\n" RESETC);
+    exit(1);
 }
