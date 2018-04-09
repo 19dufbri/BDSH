@@ -5,7 +5,7 @@ bdsh: bdsh.c bdsh.h
 	gcc -std=c11 -Wall $< -o $@
 
 run: all
-	bdsh
+	./bdsh
 
 install: all
 	cp bdsh /usr/local/bin/bdsh
