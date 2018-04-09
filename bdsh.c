@@ -150,7 +150,7 @@ char *findProgPath(char *prgm) {
                 if (fileExecute(result)) return result;
                 free(result);
                 fprintf(stderr, WARNC "%s: You don't have executable permissions\n" RESETC, prgm);
-                return 0x0;
+                return NULL;
             }
             if (cur == 0x0) break;
             start = path + i + 1;
@@ -176,7 +176,7 @@ char *findProgPath(char *prgm) {
     }
     
     fprintf(stderr, WARNC "%s: Program couldn't be found\n" RESETC, prgm);
-    return 0x0;
+    return NULL;
 }
 
 char *getFullPath(char *path, char *prog) {
