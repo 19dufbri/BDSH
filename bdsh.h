@@ -25,9 +25,16 @@ int createChildProcess(char* prgm, char *argv[]);
 void allocerror(void);
 
 // Builtin Functions
+#define NUM_BUILTINS    (sizeof(builtins) / sizeof(struct builtin))
+
 bool checkBuiltins(char *argv[]);
 void builtinexit(int argc, char *argv[]);
 void builtincd(int argc, char *argv[]);
 void builtinhelp(int argc, char *argv[]);
+
+struct builtin {
+    char *name;
+    void (*function)(int, char **);
+};
 
 #endif

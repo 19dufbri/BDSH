@@ -11,20 +11,11 @@
 #include <errno.h>
 #include "bdsh.h"
 
-// Names of builtin commands
-char *builtin[] = {
-    "exit",
-    "cd",
-    "help",
-    NULL
-};
-
-// Pointers to the builtin commands
-void (*builtinfunc[]) (int argc, char *argv[]) = {
-    &builtinexit,
-    &builtincd,
-    &builtinhelp,
-    NULL
+// Our builtin functions
+struct builtin builtins[] = {
+  {"exit", &builtinexit},
+  {"cd", &builtincd},
+  {"help", &builtinhelp}
 };
 
 // Main function
@@ -234,17 +225,16 @@ int createChildProcess(char* prgm, char *argv[]) {
 // Check if a command is a builtin
 bool checkBuiltins(char *argv[]) {
     
-    char *search;
+    struct builtin search;
     int i;
     
-    for (i = 0; (search = builtin[i]) != NULL; i++) {
-        if (strcmp(search, argv[0]) == 0) {
-            void (*cmd)(int, char**) = builtinfunc[i];
-            
-            for (i = 0; (search = argv[i]) != NULL; i++)
+    for (i = 0; i < NUM_BUILTINS; i++) {
+        search = builtins[i];
+        if (strcmp(search.name, argv[0]) == 0) {
+            for (i = 0; argv[i] != NULL; i++)
                 ;
             
-            cmd(i, argv);
+            search.function(i, argv);
             
             return true;
         }
