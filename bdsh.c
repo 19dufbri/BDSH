@@ -44,36 +44,32 @@ int main(int argc, char *argv[]) {
             continue;
         }
         path = findProgPath(args[0]);
-        if (path != NULL) {
+        if (path != NULL)
             createChildProcess(path, args);
-        }
+        
         // Memory Management
         free(args);
         free(line);
     }
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 // Get a single line of stdin
 char *getLineInput(void) {
     
-    char *line;
+    char *line = calloc(BUF_SIZE, sizeof(char));
     int cur;
     int used;
     
-    used = 0;
-    line = calloc(BUF_SIZE, sizeof(char));
-    
     if (line == NULL) allocerror();
     
-    while ((cur = getchar()) != EOF) {
+    for (used = 0; (cur = getchar()) != EOF; used++) {
         if (used % BUF_SIZE == 0) {
             line = realloc(line, (BUF_SIZE + used) * sizeof(char));
             if (line == NULL) allocerror();
         }
         if (cur == '\n') break;
         line[used] = cur;
-        used++;
     }
     
     return line;
@@ -82,41 +78,31 @@ char *getLineInput(void) {
 // Break string by spaces
 char **getAllArgs(char *line) {
     
-    char **argv;
-    char *start;
+    char **argv = calloc(1, sizeof(char *));
+    char *start = line;
     char cur;
-    int size;
+    int size = 0;
     int i;
-    bool space;
-    
-    argv = calloc(1, sizeof(char *));
+    bool space = false;
     
     if (argv == NULL) allocerror();
     
-    i = 0;
-    start = line;
-    size = 0;
-    cur = 'A';
-    
-    while (cur != 0x0) {
-        cur = line[i];
+    for (i = 0; (cur = line[i]) || true; i++) {
         if (cur == ' ' || cur == 0x0) {
             if (!space) {
                 argv = realloc(argv, (size + 2) * sizeof(char *));
-                
                 if (argv == NULL) allocerror();
                 
                 argv[size] = start;
-                argv[size + 1] = NULL;
-                size++;
+                argv[size++ + 1] = NULL;
             }
+            if (cur == 0x0) break;
             line[i] = 0x0;
             start = line + i + 1;
             space = true;
         } else {
             space = false;
         }
-        i++;
     }
     
     return argv;
@@ -125,25 +111,19 @@ char **getAllArgs(char *line) {
 // Find the path to a specific program
 char *findProgPath(char *prgm) {
     
-    char *path;
-    char *start;
+    char *start = getenv("PATH");
+    char *path = calloc(strlen(start) + 1, sizeof(char));
     char *result;
     char cur;
     int i;
     
-    start = getenv("PATH");
-    path = calloc(strlen(start) + 1, sizeof(char));
-    
     if (path == NULL) allocerror();
     
     strcat(path, start);
-    
-    i = 0;
     start = path;
     
     // Assume in PATH
-    while (true) {
-        cur = path[i];
+    for (i = 0; (cur = path[i]) || true; i++) {
         if (cur == ':' || cur == 0x0) {
             path[i] = 0x0;
             result = getFullPath(start, prgm);
@@ -157,7 +137,6 @@ char *findProgPath(char *prgm) {
             if (cur == 0x0) break;
             start = path + i + 1;
         }
-        i++;
     }
     
     free(result);
@@ -184,9 +163,7 @@ char *findProgPath(char *prgm) {
 // Get the full path of a program
 char *getFullPath(char *path, char *prog) {
     
-    char *result;
-    
-    result = calloc(strlen(path) + strlen(prog) + 2, sizeof(char));
+    char *result = calloc(strlen(path) + strlen(prog) + 2, sizeof(char));
     
     if (result == NULL) allocerror();
     
@@ -197,9 +174,6 @@ char *getFullPath(char *path, char *prog) {
     return result;
 }
 
-// Get the environment 
-extern char **environ;
-
 // Attempt to create a child process
 int createChildProcess(char* prgm, char *argv[]) {
     
@@ -209,9 +183,8 @@ int createChildProcess(char* prgm, char *argv[]) {
     if ((pid = fork()) != 0) {
         // Parent process
         waitpid(pid, &status, 0);
-        if (WEXITSTATUS(status) != 0) {
+        if (WEXITSTATUS(status) != EXIT_SUCCESS)
             fprintf(stderr, WARNC "%s: Exited with code: %i\n" RESETC, argv[0], WEXITSTATUS(status));
-        }
         return WEXITSTATUS(status);
     } else {
         // Child process
@@ -219,7 +192,7 @@ int createChildProcess(char* prgm, char *argv[]) {
         fprintf(stderr, WARNC "%s: Couldn't be started\n" RESETC, argv[0]);
         exit(0);
     }
-    return -1;
+    return EXIT_FAILURE;
 }
 
 // Check if a command is a builtin
@@ -245,13 +218,12 @@ bool checkBuiltins(char *argv[]) {
 
 // Exits the shell
 void builtinexit(int argc, char *argv[]) {
-    if (argc == 2) {
+    if (argc == 2)
         exit(atoi(argv[1]));
-    } else if (argc == 1) {
-        exit(0);
-    } else {
-        fprintf(stderr, WARNC "exit: Too many arguments\n" RESETC);
-    }
+    else if (argc == 1)
+        exit(EXIT_SUCCESS);
+    
+    fprintf(stderr, WARNC "exit: Too many arguments\n" RESETC);
 }
 
 // Changes the current directory
@@ -263,24 +235,23 @@ void builtincd(int argc, char *argv[]) {
     if (argc >= 1 && argc <= 2) {
         if (argc == 1) {
             if (home == NULL) {
-                fprintf(stderr, WARNC "cd: Folder doesn't exist" RESETC);
+                fprintf(stderr, WARNC "cd: HOME doesn't exist" RESETC);
                 return;
             }
-        path = home;
+            path = home;
         } else {
             path = argv[1];
         }
         errno = 0;
         if (chdir(path) == -1) {
-            if (errno == EACCES) {
+            if (errno == EACCES)
                 fprintf(stderr, WARNC "cd: You don't have permission\n" RESETC);
-            } else if (errno == ENOENT){
+            else if (errno == ENOENT)
                 fprintf(stderr, WARNC "cd: \"%s\" doesn't exist\n" RESETC, path);
-            } else if (errno == ENOTDIR) {
+            else if (errno == ENOTDIR)
                 fprintf(stderr, WARNC "cd: \"%s\" is not a directory\n" RESETC, path);
-            } else if (errno != 0) {
+            else if (errno != 0)
                 fprintf(stderr, WARNC "cd: Unknown error occured\n" RESETC);
-            }
         }
     } else {
         fprintf(stderr, WARNC "cd: Too many arguments\n" RESETC);

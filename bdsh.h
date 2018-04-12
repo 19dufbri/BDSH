@@ -24,6 +24,9 @@ char *getFullPath(char *path, char *prog);
 int createChildProcess(char* prgm, char *argv[]);
 void allocerror(void);
 
+// Get the environment 
+extern char **environ;
+
 // Builtin Functions
 #define NUM_BUILTINS    (sizeof(builtins) / sizeof(struct builtin))
 
