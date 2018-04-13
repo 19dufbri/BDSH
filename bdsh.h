@@ -50,9 +50,9 @@ void builtincd(int argc, char *argv[]);
 void builtinhelp(int argc, char *argv[]);
 
 struct builtin {
-    char *name;
-    char *help;
-    void (*function)(int, char **);
+	char *name;
+	char *help;
+	void (*function)(int, char **);
 };
 
 #endif

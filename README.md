@@ -26,9 +26,9 @@ parser.
 Items I wish to add stand as follows:
 * Arrow key support
 * More builtins
-    * Bourne shell compatability?
-        * Bourne again shell compatability?
-            * Even more?
+	* Bourne shell compatability?
+		* Bourne again shell compatability?
+			* Even more?
 * Complete command parser
 * Ability to read `.sh` files
 * Tab completion
