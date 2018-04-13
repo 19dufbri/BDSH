@@ -28,7 +28,6 @@
 #define PATHC           BOLDC "\x1b[38;5;33m"
 #define WARNC           BOLDC "\x1b[38;5;196m"
 #define BINAMEC         USERC
-#define BIDESCC         PATHC
 #define RESETC          "\x1b[0m"
 
 // Main function declarations
@@ -52,6 +51,7 @@ void builtinhelp(int argc, char *argv[]);
 
 struct builtin {
     char *name;
+    char *help;
     void (*function)(int, char **);
 };
 

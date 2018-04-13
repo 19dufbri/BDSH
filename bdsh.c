@@ -28,9 +28,9 @@
 
 // Our builtin functions
 struct builtin builtins[] = {
-  {"exit", &builtinexit},
-  {"cd", &builtincd},
-  {"help", &builtinhelp}
+  {"exit", BINAMEC "exit [code]" RESETC ": Exit the shell with [code].", &builtinexit},
+  {"cd", BINAMEC "cd [dir]" RESETC ": Change current directory to [dir].", &builtincd},
+  {"help", BINAMEC "help [command]" RESETC ": Get help with builtin commands.", &builtinhelp}
 };
 
 // Main function
@@ -275,11 +275,26 @@ void builtincd(int argc, char *argv[]) {
 
 // Provide help for shell builtins
 void builtinhelp(int argc, char *argv[]) {
-    printf(BINAMEC "===== Help =====\n");
-    printf(BINAMEC "cd: "   BIDESCC "Change the current working directory\n");
-    printf(BINAMEC "exit: " BIDESCC "Exits the shell environment\n");
-    printf(BINAMEC "help: " BIDESCC "Gives hap on builtin shell commands\n");
-    printf(BINAMEC "================\n" RESETC);
+    
+    struct builtin search;
+    int i;
+    
+    if (argc > 1) {
+        for (i = 0; i < NUM_BUILTINS; i++) {
+            search = builtins[i];
+            if (strcmp(search.name, argv[1]) == 0) {
+                printf("%s\n", search.help);
+                return;
+            }
+        }
+        fprintf(stderr, WARNC "help: Command %s not found\n" RESETC, argv[1]);
+    }
+    
+    printf("===== BDSH Help =====\n");
+    printf(BINAMEC "cd: "   RESETC "Change the current working directory\n");
+    printf(BINAMEC "exit: " RESETC "Exits the shell environment\n");
+    printf(BINAMEC "help: " RESETC "Gives hap on builtin shell commands\n");
+    printf("=====================\n");
 }
 
 // Endpoint for memory erors
