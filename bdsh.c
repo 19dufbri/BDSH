@@ -33,6 +33,8 @@ struct builtin builtins[] = {
   {"help", BINAMEC "help [command]" RESETC ": Get help with builtin commands.", &builtinhelp}
 };
 
+int code = 0;
+
 // Main function
 int main(int argc, char *argv[]) {
 	
@@ -43,7 +45,7 @@ int main(int argc, char *argv[]) {
 	// Main loop of shell
 	while (true) {
 		// Prompt
-		printf(USERC "%s" RESETC ":" PATHC "%s" RESETC "> ", getpwuid(getuid())->pw_name, getcwd(NULL, 0));
+		printf(USERC "%s" RESETC ":" PATHC "%s" RESETC " (%d)> ", getpwuid(getuid())->pw_name, getcwd(NULL, 0), code);
 		fflush(stdout);
 		// Get our arguments
 		line = getLineInput();
@@ -51,6 +53,7 @@ int main(int argc, char *argv[]) {
 			free(line);
 			continue;
 		}
+		code = 0;
 		args = getAllArgs(line);
 		// Try to execute
 		if (checkBuiltins(args)) {
@@ -60,7 +63,7 @@ int main(int argc, char *argv[]) {
 		}
 		path = findProgPath(args[0]);
 		if (path != NULL)
-			createChildProcess(path, args);
+			code = createChildProcess(path, args);
 		
 		// Memory Management
 		free(args);
@@ -147,6 +150,7 @@ char *findProgPath(char *prgm) {
 				if (fileExecute(result)) return result;
 				free(result);
 				fprintf(stderr, WARNC "%s: You don't have executable permissions\n" RESETC, prgm);
+				code = 127;
 				return NULL;
 			}
 			if (cur == 0x0) break;
@@ -168,10 +172,12 @@ char *findProgPath(char *prgm) {
 			return path;
 		} else {
 			fprintf(stderr, WARNC "%s: You don't have executable permissions\n" RESETC, prgm);
+			code = 127;
 		}
 	}
 	
 	fprintf(stderr, WARNC "%s: Program couldn't be found\n" RESETC, prgm);
+	code = 126;
 	return NULL;
 }
 
@@ -239,6 +245,7 @@ void builtinexit(int argc, char *argv[]) {
 		exit(EXIT_SUCCESS);
 	
 	fprintf(stderr, WARNC "exit: Too many arguments\n" RESETC);
+	code = 127;
 }
 
 // Changes the current directory
@@ -251,6 +258,7 @@ void builtincd(int argc, char *argv[]) {
 		if (argc == 1) {
 			if (home == NULL) {
 				fprintf(stderr, WARNC "cd: HOME doesn't exist" RESETC);
+				code = 126;
 				return;
 			}
 			path = home;
@@ -267,9 +275,11 @@ void builtincd(int argc, char *argv[]) {
 				fprintf(stderr, WARNC "cd: \"%s\" is not a directory\n" RESETC, path);
 			else if (errno != 0)
 				fprintf(stderr, WARNC "cd: Unknown error occured\n" RESETC);
+			code = errno;
 		}
 	} else {
 		fprintf(stderr, WARNC "cd: Too many arguments\n" RESETC);
+		code = 127;
 	}
 }
 
@@ -288,6 +298,7 @@ void builtinhelp(int argc, char *argv[]) {
 			}
 		}
 		fprintf(stderr, WARNC "help: Command %s not found\n" RESETC, argv[1]);
+		code = 127;
 	}
 	
 	printf("===== BDSH Help =====\n");
