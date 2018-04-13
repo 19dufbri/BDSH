@@ -299,11 +299,10 @@ void builtinhelp(int argc, char *argv[]) {
 		code = 127;
 	}
 	
-	printf("===== BDSH Help =====\n");
-	printf(BINAMEC "cd: "   RESETC "Change the current working directory\n");
-	printf(BINAMEC "exit: " RESETC "Exits the shell environment\n");
-	printf(BINAMEC "help: " RESETC "Gives hap on builtin shell commands\n");
-	printf("=====================\n");
+	printf(BIHELPC "===== BDSH Help =====\n" RESETC);
+	for (i = 0; i < NUM_BUILTINS; i++)
+		printf("%s\n", builtins[i].help);
+	printf(BIHELPC "=====================\n" RESETC);
 }
 
 // Endpoint for memory erors

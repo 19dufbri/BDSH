@@ -28,6 +28,7 @@
 #define PATHC           BOLDC "\x1b[38;5;33m"
 #define WARNC           BOLDC "\x1b[38;5;196m"
 #define BINAMEC         USERC
+#define BIHELPC		PATHC
 #define RESETC          "\x1b[0m"
 
 // Main function declarations
