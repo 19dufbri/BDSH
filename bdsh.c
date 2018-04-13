@@ -204,8 +204,6 @@ int createChildProcess(char* prgm, char *argv[]) {
 	if ((pid = fork()) != 0) {
 		// Parent process
 		waitpid(pid, &status, 0);
-		if (WEXITSTATUS(status) != EXIT_SUCCESS)
-			fprintf(stderr, WARNC "%s: Exited with code: %i\n" RESETC, argv[0], WEXITSTATUS(status));
 		return WEXITSTATUS(status);
 	} else {
 		// Child process
