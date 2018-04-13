@@ -43,7 +43,8 @@ Current:
 argument is suppled, the shell changes to the user's home dirrectory.
 * `exit <code>` - Exits the shell, accepts one argument as the code to exit.
 If no code is supplied, the shell with exit with code `0`.
-* `help` - Gives help with the builtin commands.
+* `help <command>` - Gives help with the specified command. If no argument is
+supplied, general help will be shown.
 
 Planned:
 * `: [args]`
