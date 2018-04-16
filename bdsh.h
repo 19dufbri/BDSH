@@ -20,7 +20,6 @@
 #define fileExecute(x)  access((x), X_OK) == 0
 #define fileExist(x)    access((x), F_OK) == 0
 #define BUF_SIZE        100
-#define ZEROCHAR        '0'
 
 // Colors for output
 #define BOLDC           "\x1b[1m"

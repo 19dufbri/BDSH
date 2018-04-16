@@ -112,7 +112,7 @@ char **getAllArgs(char *line) {
 				if (argv == NULL) allocerror();
 				
 				argv[size] = start;
-				argv[size++ + 1] = NULL;
+				argv[++size] = NULL;
 			}
 			if (cur == 0x0) break;
 			line[i] = 0x0;
@@ -209,7 +209,7 @@ int createChildProcess(char* prgm, char *argv[]) {
 		// Child process
 		execve(prgm, argv, environ);
 		fprintf(stderr, WARNC "%s: Couldn't be started\n" RESETC, argv[0]);
-		exit(0);
+		exit(0); // Don't display another error message
 	}
 	return EXIT_FAILURE;
 }
@@ -308,5 +308,5 @@ void builtinhelp(int argc, char *argv[]) {
 // Endpoint for memory erors
 void allocerror(void) {
 	fprintf(stderr, WARNC "bdsh: Couldn't allocate memory\n" RESETC);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
