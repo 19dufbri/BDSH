@@ -17,18 +17,16 @@
 #define BDSH
 
 // Normal Macros
-#define fileExecute(x)  access((x), X_OK) == 0
-#define fileExist(x)    access((x), F_OK) == 0
-#define BUF_SIZE        100
+#define fileExecute(x)	access((x), X_OK) == 0
+#define fileExist(x)	access((x), F_OK) == 0
+#define BUF_SIZE	100
 
 // Colors for output
-#define BOLDC           "\x1b[1m"
-#define USERC           BOLDC "\x1b[38;5;46m" 
-#define PATHC           BOLDC "\x1b[38;5;33m"
-#define WARNC           BOLDC "\x1b[38;5;196m"
-#define BINAMEC         USERC
-#define BIHELPC		PATHC
-#define RESETC          "\x1b[0m"
+#define BOLDC		"\x1b[1m"
+#define GREENC		BOLDC "\x1b[38;5;46m" 
+#define BLUEC		BOLDC "\x1b[38;5;33m"
+#define REDC		BOLDC "\x1b[38;5;196m"
+#define RESETC		"\x1b[0m"
 
 // Main function declarations
 char *getLineInput(void);
@@ -42,7 +40,7 @@ void allocerror(void);
 extern char **environ;
 
 // Builtin Functions
-#define NUM_BUILTINS    (sizeof(builtins) / sizeof(struct builtin))
+#define NUM_BUILTINS	(sizeof(builtins) / sizeof(struct builtin))
 
 bool checkBuiltins(char *argv[]);
 void builtinexit(int argc, char *argv[]);

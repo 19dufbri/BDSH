@@ -28,9 +28,9 @@
 
 // Our builtin functions
 struct builtin builtins[] = {
-  {"exit", BINAMEC "exit [code]" RESETC ": Exit the shell with [code].", &builtinexit},
-  {"cd", BINAMEC "cd [dir]" RESETC ": Change current directory to [dir].", &builtincd},
-  {"help", BINAMEC "help [command]" RESETC ": Get help with builtin commands.", &builtinhelp}
+  {"exit", GREENC "exit [code]" RESETC ": Exit the shell with [code].", &builtinexit},
+  {"cd", GREENC "cd [dir]" RESETC ": Change current directory to [dir].", &builtincd},
+  {"help", GREENC "help [command]" RESETC ": Get help with builtin commands.", &builtinhelp}
 };
 
 int code = 0;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 	// Main loop of shell
 	while (true) {
 		// Prompt
-		printf(USERC "%s" RESETC ":" PATHC "%s" RESETC " (%d)> ", getpwuid(getuid())->pw_name, getcwd(NULL, 0), code);
+		printf(GREENC "%s" RESETC ":" BLUEC "%s" RESETC " (%d)> ", getpwuid(getuid())->pw_name, getcwd(NULL, 0), code);
 		fflush(stdout);
 		// Get our arguments
 		line = getLineInput();
@@ -149,7 +149,7 @@ char *findProgPath(char *prgm) {
 				free(path);
 				if (fileExecute(result)) return result;
 				free(result);
-				fprintf(stderr, WARNC "%s: You don't have executable permissions\n" RESETC, prgm);
+				fprintf(stderr, REDC "%s: You don't have executable permissions\n" RESETC, prgm);
 				code = 127;
 				return NULL;
 			}
@@ -171,12 +171,12 @@ char *findProgPath(char *prgm) {
 			strcat(path, prgm);
 			return path;
 		} else {
-			fprintf(stderr, WARNC "%s: You don't have executable permissions\n" RESETC, prgm);
+			fprintf(stderr, REDC "%s: You don't have executable permissions\n" RESETC, prgm);
 			code = 127;
 		}
 	}
 	
-	fprintf(stderr, WARNC "%s: Program couldn't be found\n" RESETC, prgm);
+	fprintf(stderr, REDC "%s: Program couldn't be found\n" RESETC, prgm);
 	code = 126;
 	return NULL;
 }
@@ -208,7 +208,7 @@ int createChildProcess(char* prgm, char *argv[]) {
 	} else {
 		// Child process
 		execve(prgm, argv, environ);
-		fprintf(stderr, WARNC "%s: Couldn't be started\n" RESETC, argv[0]);
+		fprintf(stderr, REDC "%s: Couldn't be started\n" RESETC, argv[0]);
 		exit(0); // Don't display another error message
 	}
 	return EXIT_FAILURE;
@@ -242,7 +242,7 @@ void builtinexit(int argc, char *argv[]) {
 	else if (argc == 1)
 		exit(EXIT_SUCCESS);
 	
-	fprintf(stderr, WARNC "exit: Too many arguments\n" RESETC);
+	fprintf(stderr, REDC "exit: Too many arguments\n" RESETC);
 	code = 127;
 }
 
@@ -255,7 +255,7 @@ void builtincd(int argc, char *argv[]) {
 	if (argc >= 1 && argc <= 2) {
 		if (argc == 1) {
 			if (home == NULL) {
-				fprintf(stderr, WARNC "cd: HOME doesn't exist" RESETC);
+				fprintf(stderr, REDC "cd: HOME doesn't exist" RESETC);
 				code = 126;
 				return;
 			}
@@ -266,17 +266,17 @@ void builtincd(int argc, char *argv[]) {
 		errno = 0;
 		if (chdir(path) == -1) {
 			if (errno == EACCES)
-				fprintf(stderr, WARNC "cd: You don't have permission\n" RESETC);
+				fprintf(stderr, REDC "cd: You don't have permission\n" RESETC);
 			else if (errno == ENOENT)
-				fprintf(stderr, WARNC "cd: \"%s\" doesn't exist\n" RESETC, path);
+				fprintf(stderr, REDC "cd: \"%s\" doesn't exist\n" RESETC, path);
 			else if (errno == ENOTDIR)
-				fprintf(stderr, WARNC "cd: \"%s\" is not a directory\n" RESETC, path);
+				fprintf(stderr, REDC "cd: \"%s\" is not a directory\n" RESETC, path);
 			else if (errno != 0)
-				fprintf(stderr, WARNC "cd: Unknown error occured\n" RESETC);
+				fprintf(stderr, REDC "cd: Unknown error occured\n" RESETC);
 			code = errno;
 		}
 	} else {
-		fprintf(stderr, WARNC "cd: Too many arguments\n" RESETC);
+		fprintf(stderr, REDC "cd: Too many arguments\n" RESETC);
 		code = 127;
 	}
 }
@@ -295,18 +295,18 @@ void builtinhelp(int argc, char *argv[]) {
 				return;
 			}
 		}
-		fprintf(stderr, WARNC "help: Command %s not found\n" RESETC, argv[1]);
+		fprintf(stderr, REDC "help: Command %s not found\n" RESETC, argv[1]);
 		code = 127;
 	}
 	
-	printf(BIHELPC "===== BDSH Help =====\n" RESETC);
+	printf(BLUEC "===== BDSH Help =====\n" RESETC);
 	for (i = 0; i < NUM_BUILTINS; i++)
 		printf("%s\n", builtins[i].help);
-	printf(BIHELPC "=====================\n" RESETC);
+	printf(BLUEC "=====================\n" RESETC);
 }
 
 // Endpoint for memory erors
 void allocerror(void) {
-	fprintf(stderr, WARNC "bdsh: Couldn't allocate memory\n" RESETC);
+	fprintf(stderr, REDC "bdsh: Couldn't allocate memory\n" RESETC);
 	exit(EXIT_FAILURE);
 }
