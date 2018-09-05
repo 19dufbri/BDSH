@@ -1,14 +1,30 @@
 # Simple Makefile, no wildcards because there are only two files
-all: bdsh
 
-bdsh: bdsh.c bdsh.h
-	gcc -std=c11 -Wall $< -o $@
+IDIR   = ./include
+ODIR   = ./bin
+SDIR   = ./src
+OUT    = bdsh
+CFLAGS = -std=c11 -I$(IDIR) -Wall
+CC     = gcc
+HEAD   = $(IDIR)/bdsh.h $(IDIR)/builtin.h
+OBJ    = $(ODIR)/bdsh.o $(ODIR)/builtin.o
+
+all: $(OUT)
+
+$(ODIR)/%.o: ./src/%.c $(HEAD) $(ODIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OUT): $(OBJ)
+	$(CC) $(CFLAGS) $^ -o $@
+
+$(ODIR):
+	mkdir $(ODIR)
 
 run: all
-	./bdsh
+	./$(OUT)
 
 install: all
-	cp bdsh /usr/local/bin/bdsh
+	cp $(OUT) /usr/local/bin/$(OUT)
 
 clean:
-	rm -rf bdsh
+	rm -rf $(OUT) $(ODIR)

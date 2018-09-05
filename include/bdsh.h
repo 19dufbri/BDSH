@@ -39,18 +39,7 @@ void allocerror(void);
 // Get the environment 
 extern char **environ;
 
-// Builtin Functions
-#define NUM_BUILTINS	(sizeof(builtins) / sizeof(struct builtin))
-
-bool checkBuiltins(char *argv[]);
-void builtinexit(int argc, char *argv[]);
-void builtincd(int argc, char *argv[]);
-void builtinhelp(int argc, char *argv[]);
-
-struct builtin {
-	char *name;
-	char *help;
-	void (*function)(int, char **);
-};
+// Return Code for BDSH
+extern int code;
 
 #endif
