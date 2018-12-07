@@ -38,7 +38,9 @@ int main(int argc, char *argv[]) {
 	// Main loop of shell
 	while (true) {
 		// Prompt
-		printf(GREENC "%s" RESETC ":" BLUEC "%s" RESETC " (%d)> ", getpwuid(getuid())->pw_name, getcwd(NULL, 0), code);
+		char *cwd = getcwd(NULL, 0);
+		printf(GREENC "%s" RESETC ":" BLUEC "%s" RESETC " (%d)> ", getpwuid(getuid())->pw_name, cwd, code);
+		free(cwd);
 		fflush(stdout);
 		// Get our arguments
 		line = getLineInput();
