@@ -167,6 +167,7 @@ char *findProgPath(char *prgm) {
 		} else {
 			fprintf(stderr, REDC "%s: You don't have executable permissions\n" RESETC, prgm);
 			code = 127;
+			return NULL;
 		}
 	}
 	
