@@ -32,14 +32,15 @@ int code = 0;
 // Main function
 int main(int argc, char *argv[]) {
 	
-	char *line;
-	char *path;
+	char *line, *path;
 	char **args;
 	
 	// Main loop of shell
 	while (true) {
 		// Prompt
-		printf(GREENC "%s" RESETC ":" BLUEC "%s" RESETC " (%d)> ", getpwuid(getuid())->pw_name, getcwd(NULL, 0), code);
+		char *cwd = getcwd(NULL, 0);
+		printf(GREENC "%s" RESETC ":" BLUEC "%s" RESETC " (%d)> ", getpwuid(getuid())->pw_name, cwd, code);
+		free(cwd);
 		fflush(stdout);
 		// Get our arguments
 		line = getLineInput();
@@ -70,8 +71,7 @@ int main(int argc, char *argv[]) {
 char *getLineInput(void) {
 	
 	char *line = calloc(BUF_SIZE, sizeof(char));
-	int cur;
-	int used;
+	int cur, used;
 	
 	if (line == NULL) allocerror();
 	
@@ -193,8 +193,7 @@ char *getFullPath(char *path, char *prog) {
 // Attempt to create a child process
 int createChildProcess(char* prgm, char *argv[]) {
 	
-	int pid;
-	int status;
+	int pid, status;
 	
 	if ((pid = fork()) != 0) {
 		// Parent process
