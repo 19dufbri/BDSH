@@ -12,7 +12,7 @@ the basis of a UNIX system is along with leaning more about the C language.
 ### Choices I Made
 
 I have made several design choices during the course of this project for very
-specific reasons. One of those was the intentional evitation of many C library
+specific reasons. One of those was the intentional omission of many C library
 functions that would have made development easier. This was in an attempt to
 give myself a challenge as well as giving me a more complete understanding of
 the C language and what is possible with pointers.
